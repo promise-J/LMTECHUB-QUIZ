@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useRef, useState } from "react";
-import { GrFormAdd } from "react-icons/gr";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -17,7 +16,7 @@ const initialState = {
 };
 
 const CreateQuestion = () => {
-    const {id} = useParams()
+  const { id } = useParams();
   const [questionData, setQuestionData] = useState(initialState);
   const [addedOptions, setAddedOptions] = useState(false);
   const {
@@ -31,7 +30,6 @@ const CreateQuestion = () => {
     option4,
     correctOption,
   } = questionData;
-
 
   const ulRef = useRef(null);
 
@@ -198,24 +196,49 @@ const CreateQuestion = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(options, "every thing is fine");
     try {
-        const res = await axios.post('http://localhost:5000/api/question', {quizId: id, options, correctOption, score, questionType, title})
-        setQuestionData(initialState)
-        toast.success('Question created!')
+      const res = await axios.post("http://localhost:5000/api/question", {
+        quizId: id,
+        options,
+        correctOption,
+        score,
+        questionType,
+        title,
+      });
+      console.log(res.data);
+      setQuestionData(initialState);
+      toast.success("Question created!");
     } catch (error) {
-        console.log(error)
+      toast.error("Something went wrong. Try again!");
+      console.log(error);
     }
   };
 
-  const addOptions = ()=>{
-    if (!option1 || !option2 || !option3 || !option4 || !correctOption) {
-        return toast.error("Enter the required fields");
-      }
-      const optionsArr = [option1, option2, option3, option4];
-      setQuestionData({ ...questionData, options: [...optionsArr] });
-      setAddedOptions(true)
-      toast.success('Options synced! You can proceed to create the question')
-  }
+  const addOptions = () => {
+    if (!questionType || !title || !score) {
+      return toast.error("Please enter a score, title and question type");
+    }
+    if (!option1 || !option2 || !option3 || !option4) {
+      return toast.error("Enter the options field");
+    }
+    if (!correctOption) {
+      return toast.error(
+        "Indicate the correct answer by checking the box beside the correct option"
+      );
+    }
+    const optionsArr = [option1, option2, option3, option4];
+    setQuestionData({ ...questionData, options: [...optionsArr] });
+    setAddedOptions(true);
+    toast.success("Options synced! You can proceed to create the question");
+    const opts = [];
+    opts[0] = option1;
+    opts[1] = option2;
+    opts[2] = option3;
+    opts[3] = option4;
+    setQuestionData({ ...questionData, options: opts });
+    console.log(questionData);
+  };
 
   return (
     <div className="mx-1 md:mx-5 my-4 p-3">

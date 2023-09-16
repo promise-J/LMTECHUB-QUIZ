@@ -3,25 +3,34 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate, useParams } from "react-router-dom";
+import LoadingLogo from "../components/loading/LoadingLogo";
 
 const ViewQuestions = () => {
   const { id: quizId } = useParams();
   const [questions, setQuestions] = useState([]);
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const getQuestions = async () => {
       try {
+        setLoading(true)
         const res = await axios.get(
           `http://localhost:5000/api/quiz/questions/${quizId}`
         );
         setQuestions(res.data);
+        setLoading(false)
       } catch (error) {
         console.log(error);
+        setLoading(false)
       }
     };
     getQuestions();
   }, [quizId]);
+
+  if(loading){
+    return <LoadingLogo />
+  }
 
 
   return (
@@ -39,7 +48,7 @@ const ViewQuestions = () => {
         </div>
       ))
       : 
-      <p>No question. create questions. <button className="bg-blue-300 py-1 px-2 rounded ms-3" onClick={()=> navigate(`/dashboard/createQuestion/${id}`)}>Create Question here</button> </p>
+      <p>No question. create questions. <button className="bg-blue-300 py-1 px-2 rounded ms-3" onClick={()=> navigate(`/dashboard/createQuestion/${quizId}`)}>Create Question here</button> </p>
     }
     </div>
   );

@@ -19,7 +19,6 @@ const AnswerPad = ({
   }, [answers]);
 
   const uniq = answers.find(a=> a.qIdx === questionNumber)
-  console.log(answers)
 
   // console.log(selected, 'the selected')
   // console.log(currentAnswer?.ansIdx === idx, "equality check", op);

@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { questions } from "../../data";
+// import { questions } from "../../data";
 import Questions from "./Questions";
+import QuestionButton from "../../components/button/QuestionButton";
+import { useLocation } from "react-router-dom";
 
 const StartQuiz = () => {
-  const minutes = 60;
+  const { state } = useLocation();
+  // const minutes = 60;
   const seconds = 60;
+  const [quiz, setQuiz] = useState(null);
   const [quests, setQuests] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(null);
   const [questionNumber, setQuestionNumber] = useState(0);
-  const [remainingMinutes, setRemainingMinutes] = useState(minutes - 1);
+  const [remainingMinutes, setRemainingMinutes] = useState(
+    () => quiz?.duration - 1
+  );
   const [remainingSeconds, setRemainingSeconds] = useState(seconds - 1);
   const [answers, setAnswers] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const getQuestions = () => {
-      setQuests(questions);
+      setQuests(state?.questions);
+      setQuiz(state?.quiz);
+      setUser(state?.user);
+      setRemainingMinutes(state?.quiz?.duration - 1);
       // setCurrentQuestion(quests[questionNumber]);
     };
     getQuestions();
@@ -50,32 +59,30 @@ const StartQuiz = () => {
 
   // console.log(answers.length, questionNumber + 1)
 
-
   return (
     <div className="p-4">
       <div>
         <div className="flex gap-3 p-3 max-h-[90vh] relative">
           <div className="absolute left-[30%] top-20">
-            Time: <span className="text-3xl font-bold">8 </span> minutes
+            Time:{" "}
+            <span className="text-3xl font-bold">{state?.quiz?.duration} </span>{" "}
+            minutes
           </div>
           <div className="py-3 px-4 overflow-y-scroll no-scrollbar">
+            <span className="text-xl font-bold">
+              Welcome! {user?.username.toUpperCase()}{" "}
+            </span>
             <h3 className="font-semibold mb-4">Questions ({quests.length})</h3>
             <div className="flex p-2 flex-column gap-2 border-r-green-500 border-r-2">
-              {questions.map((q) => (
-                <button
-                  onClick={() => setQuestionNumber(q.id - 1)}
-                  // disabled={
-                  //   // !(questionNumber + 1) === 1 || !((questionNumber + 1) - answers.length === 1)
-                  // }
-                  key={q.id}
-                  className={`border hover:bg-green-500 hover:text-white py-3 rounded ${
-                    q.id === questionNumber + 1 ? "bg-green-500 text-white" : ""
-                  }
-                   disabled:bg-gray-100 disabled:text-black
-                  `}
-                >
-                  {q.id}
-                </button>
+              {quests.map((q, idx) => (
+                <QuestionButton
+                  key={q._id}
+                  q={q}
+                  questionNumber={questionNumber}
+                  setQuestionNumber={setQuestionNumber}
+                  questionId={idx}
+                  answers={answers}
+                />
               ))}
             </div>
           </div>
@@ -88,6 +95,9 @@ const StartQuiz = () => {
               remainingSeconds={remainingSeconds}
               questionNumber={questionNumber}
               setQuestionNumber={setQuestionNumber}
+              quizId={quiz?._id}
+              userId={user?._id}
+              email={user?.email}
             />
           </div>
         </div>

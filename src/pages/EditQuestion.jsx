@@ -2,16 +2,18 @@ import axios from "axios";
 import React, { useRef, useState } from "react";
 import { GrFormAdd } from "react-icons/gr";
 import { VscPass } from "react-icons/vsc";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const EditQuestion = () => {
+  const navigate = useNavigate()
   const { id } = useParams();
   const [addedOptions, setAddedOptions] = useState(false);
   const location = useLocation();
   const fetchedData = location.state;
   const initialState = {
       questionType: fetchedData?.questionType,
+      questionId: fetchedData?._id,
       score: fetchedData?.score,
       title: fetchedData?.title,
       option1: fetchedData?.options[0],
@@ -20,8 +22,9 @@ const EditQuestion = () => {
       option4: fetchedData?.options[3],
       prevCorrectOption: fetchedData?.correctOption,
       options: fetchedData?.options,
-      correctOption: ''
+      correctOption: fetchedData?.correctOption
     };
+    
 
     const [questionData, setQuestionData] = useState(initialState);
 
@@ -35,8 +38,10 @@ const EditQuestion = () => {
     option3,
     option4,
     correctOption,
-    prevCorrectOption
+    // prevCorrectOption,
+    questionId
   } = questionData;
+
 
 
   const ulRef = useRef(null);
@@ -44,13 +49,12 @@ const EditQuestion = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setQuestionData({ ...questionData, [name]: value });
-    console.log(correctOption,'the correct option')
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/question", {
+      const res = await axios.put(`http://localhost:5000/api/question/${questionId}`, {
         quizId: id,
         options,
         correctOption,
@@ -59,16 +63,22 @@ const EditQuestion = () => {
         title,
       });
       setQuestionData(initialState);
-      toast.success("Question created!");
+      toast.success("Question edited!");
+      navigate(`/dashboard/viewQuestions/${id}`)
     } catch (error) {
+      toast.error(error?.response?.data?.message)
       console.log(error);
     }
   };
 
   const addOptions = () => {
-    if (!option1 || !option2 || !option3 || !option4 || !correctOption) {
-      return toast.error("Enter the required fields");
+    if (!option1 || !option2 || !option3 || !option4) {
+      return toast.error("Enter the options fields");
     }
+    console.log(correctOption)
+    // if(!correctOption){
+    //   return toast.error('Please tick a correct option')
+    // }
     const optionsArr = [option1, option2, option3, option4];
     setQuestionData({ ...questionData, options: [...optionsArr] });
     setAddedOptions(true);
@@ -147,6 +157,7 @@ const EditQuestion = () => {
               <input
                 type="radio"
                 name="correctOption"
+                defaultChecked={correctOption=== 0}
                 value={0}
                 id="correctOption1"
                 className="me-3 option-input"
@@ -162,7 +173,7 @@ const EditQuestion = () => {
                 value={option1}
                 onChange={handleChange}
               />
-                {(!correctOption && prevCorrectOption === 0) || correctOption === 0 && <VscPass size={20} fill="green" fontWeight={600} className="ms-5 mt-2" /> }
+                {correctOption === 0 && <VscPass size={20} fill="green" fontWeight={600} className="ms-5 mt-2" /> }
             </li>
           </div>
           <div className="my-2">
@@ -171,6 +182,7 @@ const EditQuestion = () => {
                 type="radio"
                 name="correctOption"
                 value={1}
+                defaultChecked={correctOption=== 1}
                 id="correctOption2"
                 className="me-3 option-input"
                 onChange={handleChange}
@@ -195,6 +207,7 @@ const EditQuestion = () => {
                 type="radio"
                 name="correctOption"
                 value={2}
+                defaultChecked={correctOption=== 2}
                 id="correctOption3"
                 className="me-3 option-input"
                 onChange={handleChange}
@@ -218,6 +231,7 @@ const EditQuestion = () => {
                 type="radio"
                 name="correctOption"
                 value={3}
+                defaultChecked={correctOption=== 3}
                 id="correctOption4"
                 className="me-3 option-input"
                 onChange={handleChange}
@@ -238,10 +252,10 @@ const EditQuestion = () => {
         </ul>
         {addedOptions ? (
           <button
-            className="bg-purple-100 w-fit py-1 px-2 rounded"
+            className="bg-purple-100 w-fit py-1 px-4 rounded"
             onClick={handleSubmit}
           >
-            Create
+            Edit
           </button>
         ) : (
           <button

@@ -8,7 +8,7 @@ const Homepage = () => {
     <div>
         <h5 className="md:text-3xl text-xl md:text-center my-3">Manage your Organisation</h5>
         <div className="flex-1 gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <Link to='/dashboard/viewquiz'>
+        <Link className="link" to='/dashboard/viewquiz'>
           <div className="rounded-xl shadow radius-200 p-4 flex justify-center flex-col gap-3 hover:scale-105 transition duration-150 ease-in cursor-pointer">
             <h1 className="bold text-xl">View Quizes</h1>
             <p className="text-zinc-400">See all your quizzes</p>
@@ -18,7 +18,7 @@ const Homepage = () => {
             </button>
           </div>
           </Link>
-          <Link to='/dashboard/createquiz'>
+          <Link className="link" to='/dashboard/createquiz'>
           <div className="rounded-xl shadow radius-200 p-4 flex justify-center flex-col gap-3 hover:scale-105 transition duration-150 ease-in cursor-pointer">
             <h1 className="bold text-xl">Create Quiz</h1>
             <p className="text-zinc-400">Start a quiz and send invites</p>
@@ -29,7 +29,7 @@ const Homepage = () => {
           </div>
           </Link>
 
-          <Link to='/dashboard/sendfeedback'>
+          <Link className="link" to='/dashboard/sendfeedback'>
           <div className="rounded-xl shadow radius-200 p-4 flex justify-center flex-col gap-3 hover:scale-105 transition duration-150 ease-in cursor-pointer">
             <h1 className="bold text-xl">Send Feedback</h1>
             <p className="text-zinc-400">

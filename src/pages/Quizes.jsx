@@ -5,6 +5,7 @@ import axios from "axios";
 import baseUrl from "../api/baseUrl";
 import QuizLoading from "../components/loading/QuizLoading";
 import Quiz from "../components/Quiz";
+import LoadingLogo from "../components/loading/LoadingLogo";
 
 const Quizes = () => {
   const [quizes, setQuizes] = useState([]);
@@ -25,8 +26,14 @@ const Quizes = () => {
     getQuizes();
   }, []);
 
+  if(loading){
+    return <LoadingLogo />
+  }
+
   const displayQuiz = (quiz)=>{
-    return loading ? <QuizLoading key={quiz._id} /> : <Quiz  key={quiz._id} quiz={quiz} />
+    return loading ? <p>Loading...</p>
+    //  <QuizLoading key={quiz._id} /> 
+     : <Quiz  key={quiz._id} quiz={quiz} />
   }
 
   return (

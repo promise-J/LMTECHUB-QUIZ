@@ -1,60 +1,50 @@
 import React, { useState } from "react";
-import { ImCancelCircle } from "react-icons/im";
-import { AiOutlineUserAdd } from "react-icons/ai";
 import { toast } from "react-toastify";
-import Toast from "../components/toast/Toast";
 import axios from "axios";
 import baseUrl from '../api/baseUrl'
+import { useNavigate } from "react-router-dom";
+import LoadingLogo from "../components/loading/LoadingLogo";
 
 const initialState = {
   duration: 0,
   title: "",
-  candidates: [],
-  candidate: "",
 };
 
 const CreateQuiz = () => {
+  const navigate = useNavigate()
   const [quizObject, setQuizObject] = useState(initialState);
   const { duration, title, candidates, candidate } = quizObject;
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setQuizObject({ ...quizObject, [name]: value });
   };
 
-  const addCandidate = () => {
-      if(!candidate) return toast.error('Provide a candidate to add')
-    // return console.log(candidate, 'the candidte')
-    setQuizObject({
-      ...quizObject,
-      candidates: [...candidates, candidate],
-      candidate: "",
-    });
-    // toast.success('Candidate added', {autoClose: 500})
-    {Toast}
-  };
-
-  const removeCandidate = (idx)=>{
-    const newCandidates = [...candidates]
-    newCandidates.splice(idx, 1)
-    setQuizObject({...quizObject, candidates: newCandidates})
-    toast.success('Candidate removed', {autoClose: 500})
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     delete quizObject.candidate
     try {
+      setLoading(true)
       const res = await axios.post(`${baseUrl}/quiz`, {...quizObject})
+      setLoading(false)
       toast.success('Quiz Created')
+      navigate('/dashboard/viewquiz')
     } catch (error) {
       toast.error(error?.response?.data?.message)
+      setLoading(false)
     }
   };
 
+  if(loading){
+    return <LoadingLogo />
+  }
+
+
+
   return (
     <div className="p-3 mt-4">
-      <div className="flex items-center my-2 p-3">
+      <div className="flex flex-column justify-center my-2 p-3">
         <p className="me-4 font-semibold">Title: </p>
         <input
           value={title}
@@ -65,7 +55,7 @@ const CreateQuiz = () => {
           className="w-1/2 p-2 outline"
         />
       </div>
-      <div className="flex items-center my-2 p-3">
+      <div className="flex flex-column justify-center my-2 p-3">
         <p className="me-4 font-semibold">Duration: </p>
         <input
           type="text"
@@ -76,29 +66,6 @@ const CreateQuiz = () => {
           className="w-1/2 p-2 outline"
         />
       </div>
-      <div className="flex items-center my-2 p-3">
-        <p className="me-4 font-semibold">Add Candidate: </p>
-        <input
-          type="text"
-          value={candidate}
-          name="candidate"
-          onChange={handleChange}
-          placeholder="Enter Candidate Email"
-          className="w-1/2 p-2 outline"
-        />
-        <AiOutlineUserAdd onClick={addCandidate} className="ms-4" size={25} cursor={"pointer"} />
-      </div>
-      <p className="font-semibold text-lg">Invitees - {candidates.length < 1 && "(None yet, Add candidates for this test)"}</p>
-      <ul className="p-3 flex flex-column gap-3">
-        {candidates.map((c, idx) => (
-          <li key={idx} className="flex items-center gap-5 p-2">
-            {c}{" "}
-            <span>
-              <ImCancelCircle cursor={"pointer"} title="Delete Candidate" onClick={()=> removeCandidate(idx)} />
-            </span>
-          </li>
-        ))}
-      </ul>
       <button
         onClick={handleSubmit}
         className="outline py-1 px-4 bg-purple-500 text-white rounded"

@@ -36,7 +36,7 @@ export const quizes = [
 export const questions = [
     {
         id: 1,
-        title: 'What is the full meaning of HTML?',
+        title: 'What is the full meaning of HTTP?',
         options: [
             'Hyper team transfer protocol',
             'Hyper text transfer protocal',
@@ -102,75 +102,98 @@ export const questions = [
     },
     {
         id: 7,
-        title: 'This is question 7',
+        title: 'How do you create a hyper link in HTML',
         options: [
-            ''
+            'a',
+            'link',
+            'alink',
+            'anchor',
         ],
-        correctAnswer: 2
+        correctAnswer: 0
     },
     {
         id: 8,
-        title: 'This is question 8',
+        title: 'How do you create an image element in HTML',
         options: [
-            ''
+            'imageSrc',
+            'imgSrc',
+            'img',
+            'image',
         ],
         correctAnswer: 2
     },
     {
         id: 9,
-        title: 'This is question 9',
+        title: 'which of the following is not a heading element in HTML',
         options: [
-            ''
+            'h1',
+            'h6',
+            'h5',
+            'h7'
         ],
-        correctAnswer: 2
+        correctAnswer: 3
     },
     {
         id: 10,
-        title: 'This is question 10',
+        title: 'What is alt attritube in HTML',
         options: [
-            ''
+            'gives description to the image',
+            'gives description to the page',
+            'gives title to the image',
+            'gives the altitude of the user browser',
         ],
-        correctAnswer: 2
+        correctAnswer: 0
     },
     {
         id: 11,
-        title: 'This is question 11',
+        title: 'What CSS style do you use to add color to text in HTML?',
         options: [
-            ''
+            'background-color',
+            'color',
+            'text-color',
+            'textile-color',
         ],
-        correctAnswer: 2
+        correctAnswer: 1
     },
     {
         id: 12,
-        title: 'This is question 12',
+        title: 'A page can only be styled using internal CSS style',
         options: [
-            ''
+            'True',
+            'False'
         ],
-        correctAnswer: 2
+        correctAnswer: 1
     },
     {
         id: 13,
-        title: 'This is question 13',
+        title: 'One of the following is not a way to display elements in css',
         options: [
-            ''
+            'flex',
+            'grid',
+            'block',
+            'margin',
         ],
-        correctAnswer: 2
+        correctAnswer: 3
     },
     {
         id: 14,
-        title: 'This is question 14',
+        title: 'One of these can be HTML attributes except',
         options: [
-            ''
+            'disabled',
+            'src',
+            'height',
+            'strong',
         ],
-        correctAnswer: 2
+        correctAnswer: 3
     },
     {
         id: 15,
-        title: 'This is question 15',
+        title: 'a and link elements are the same thing',
         options: [
-            ''
+            'True',
+            'False'
         ],
-        correctAnswer: 2
+        correctAnswer: 1
     },
 ]
 

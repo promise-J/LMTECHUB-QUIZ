@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 
+
 @layer utilities {
-    @variants responsive {
+    @layers utilities responsive {
       /* Hide scrollbar for Chrome, Safari and Opera */
       .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -35,6 +36,12 @@ dialog::backdrop{
     background-color: gray;
 }
 
+.modal-open {
+    overflow: hidden;
+    position: fixed;
+}
+
+
 .option-input{
     display: none;
 }
@@ -50,4 +57,9 @@ dialog::backdrop{
 
 .option-input:checked + label{
     background-color: green;
+}
+
+.link{
+    text-decoration: none;
+    color: inherit;
 }

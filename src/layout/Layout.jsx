@@ -32,14 +32,12 @@ const Layout = () => {
     initializeWebSocket()
   },[])
 
+  const token = localStorage.getItem('x-token')
   useEffect(() => {
-    const token = localStorage.getItem('x-token')
-    if(!token || user?.role !== 'admin'){
-      navigate('/')
-    }else{
-      console.log('stay! you are an admin')
+    if(!token){
+      return navigate('/quiz/ended')
     }
-  });
+  }, [token, user]);
 
 
   const handleClose = () => {

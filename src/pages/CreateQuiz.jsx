@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
 import baseUrl from '../api/baseUrl'
 import { useNavigate } from "react-router-dom";
 import LoadingLogo from "../components/loading/LoadingLogo";
+import createHttpRequest from "../api/httpRequest";
+import { POST_ACTION } from "../libs/routes_actions";
+import { ROUTE_POST_QUIZ } from "../libs/routes";
+import { X_TOKEN } from "../libs/constants";
 
 const initialState = {
   duration: 0,
@@ -22,11 +25,14 @@ const CreateQuiz = () => {
   };
 
   const handleSubmit = async (e) => {
+    const token = localStorage.getItem(X_TOKEN)
     e.preventDefault();
     delete quizObject.candidate
     try {
       setLoading(true)
-      const res = await axios.post(`${baseUrl}/quiz`, {...quizObject})
+      const res = await createHttpRequest(POST_ACTION, ROUTE_POST_QUIZ, {...quizObject}, token)
+      console.log(res)
+
       setLoading(false)
       toast.success('Quiz Created')
       navigate('/dashboard/viewquiz')

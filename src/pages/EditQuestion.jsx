@@ -1,9 +1,13 @@
-import axios from "axios";
 import React, { useRef, useState } from "react";
 import { GrFormAdd } from "react-icons/gr";
 import { VscPass } from "react-icons/vsc";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import baseUrl from "../api/baseUrl";
+import createHttpRequest from "../api/httpRequest";
+import { PUT_ACTION } from "../libs/routes_actions";
+import { ROUTE_EDIT_QUESTION } from "../libs/routes";
+import { X_TOKEN } from "../libs/constants";
 
 const EditQuestion = () => {
   const navigate = useNavigate()
@@ -52,16 +56,17 @@ const EditQuestion = () => {
   };
 
   const handleSubmit = async (e) => {
+    const token = localStorage.getItem(X_TOKEN)
     e.preventDefault();
     try {
-      const res = await axios.put(`http://localhost:5000/api/question/${questionId}`, {
+      await createHttpRequest(PUT_ACTION, `${ROUTE_EDIT_QUESTION}/${questionId}`, {
         quizId: id,
         options,
         correctOption,
         score,
         questionType,
         title,
-      });
+      }, token)
       setQuestionData(initialState);
       toast.success("Question edited!");
       navigate(`/dashboard/viewQuestions/${id}`)
@@ -75,10 +80,6 @@ const EditQuestion = () => {
     if (!option1 || !option2 || !option3 || !option4) {
       return toast.error("Enter the options fields");
     }
-    console.log(correctOption)
-    // if(!correctOption){
-    //   return toast.error('Please tick a correct option')
-    // }
     const optionsArr = [option1, option2, option3, option4];
     setQuestionData({ ...questionData, options: [...optionsArr] });
     setAddedOptions(true);
@@ -252,17 +253,17 @@ const EditQuestion = () => {
         </ul>
         {addedOptions ? (
           <button
-            className="bg-purple-100 w-fit py-1 px-4 rounded"
+            className="bg-purple-400 w-fit py-1 px-4 rounded"
             onClick={handleSubmit}
           >
             Edit
           </button>
         ) : (
           <button
-            className="bg-purple-100 w-fit py-1 px-2 rounded"
+            className="bg-purple-400 w-fit py-1 px-2 rounded animate-pulse"
             onClick={addOptions}
           >
-            Add Options
+            Sync Option
           </button>
         )}
       </div>

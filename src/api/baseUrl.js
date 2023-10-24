@@ -1,3 +1,5 @@
+const bkurl = import.meta.env.VITE_BACKEND_URL
 
-const baseUrl = "http://localhost:5000/api"
+
+const baseUrl = `${bkurl}/api`
 export default baseUrl

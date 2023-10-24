@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import useSingleQuiz from "../../hooks/useSingleQuiz";
-import { GrFormAdd } from "react-icons/gr";
-import axios from "axios";
-import baseUrl from "../../api/baseUrl";
+import createHttpRequest from '../../api/httpRequest'
+import { ROUTE_GET_QUIZ } from "../../libs/routes";
+import {GET_ACTION} from '../../libs/routes_actions'
 
 const SingleQuizModal = ({ paramData }) => {
   const [quiz, setQuiz] = useState(null);
@@ -19,7 +19,7 @@ const SingleQuizModal = ({ paramData }) => {
     if (paramData && paramData.id) {
       const getQuiz = async () => {
         try {
-          const res = await axios.get(`${baseUrl}/quiz/${paramData.id}`);
+          const res = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${paramData.id}`)
           const { title, duration, candidates } = res.data;
           setQuiz({ title, duration, candidates, candidate: "" });
         } catch (error) {
@@ -29,12 +29,6 @@ const SingleQuizModal = ({ paramData }) => {
       getQuiz();
     }
   }, [paramData]);
-
-  // const displayCandidates = (quiz)=>{
-  //   return quiz?.candidates?.map(c=>(c, idx)=>(
-  //     <p>{c}</p>
-  //   ))
-  // }
 
   const handleSave = (e) => {
     e.preventDefault();

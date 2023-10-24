@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
-import useSingleQuiz from "../../hooks/useSingleQuiz";
-import { GrClose, GrFormAdd } from "react-icons/gr";
-import axios from "axios";
-import baseUrl from "../../api/baseUrl";
+import { GrClose } from "react-icons/gr";
 import useNavbar from "../../hooks/useNavbar";
 import { Link } from "react-router-dom";
+import createHttpRequest from '../../api/httpRequest'
+import {GET_ACTION} from '../../libs/routes_actions'
+import { ROUTE_GET_QUIZ } from "../../libs/routes";
 
 const SingleQuizModal = ({ paramData }) => {
   const [quiz, setQuiz] = useState(null);
@@ -21,7 +21,7 @@ const SingleQuizModal = ({ paramData }) => {
     if (paramData && paramData.id) {
       const getQuiz = async () => {
         try {
-          const res = await axios.get(`${baseUrl}/quiz/${paramData.id}`);
+          const res = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${paramData.id}`);
           const { title, duration, candidates } = res.data;
           setQuiz({ title, duration, candidates, candidate: "" });
         } catch (error) {

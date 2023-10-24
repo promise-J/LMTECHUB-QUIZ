@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import CreateQuiz from "../pages/CreateQuiz";
-import Homepage from "../pages/Homepage";
-import Layout from "../layout/Layout";
 import QuizReport from "../pages/QuizReport";
 import SingleReport from "../pages/SingleReport";
 import Quizes from "../pages/Quizes";
@@ -16,7 +14,6 @@ import { useUserContext } from "../context/Usercontext";
 import MonitorQuiz from "../pages/monitorQuiz";
 
 const AdminRoute = ({ component: Component, ...rest }) => {
-  const navigate = useNavigate();
   const {user} = useUserContext()
   useEffect(() => {
     const token = localStorage.getItem('x-token')
@@ -26,7 +23,6 @@ const AdminRoute = ({ component: Component, ...rest }) => {
   });
   return (
     <Routes>
-      {/* <Route path="/home" element={<Homepage />} /> */}
       <Route path="createquiz" element={<CreateQuiz />} />
       <Route path="monitorquiz" element={<MonitorQuiz />} />
       <Route path="quizReports" element={<QuizReport />} />

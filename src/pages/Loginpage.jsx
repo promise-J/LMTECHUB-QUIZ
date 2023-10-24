@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/Usercontext";
-import axios from "axios";
 import { toast } from "react-toastify";
 import sendSocketMessage from "../context/sendSocketMessage";
 import { getWebSocket } from "../context/websocket";
+import createHttpRequest from "../api/httpRequest";
+import { ROUTE_LOGIN } from "../libs/routes";
+import {POST_ACTION} from "../libs/routes_actions"
 
 const Loginpage = () => {
   const initialState = {email: '', password: ''}
@@ -23,16 +25,27 @@ const Loginpage = () => {
 
 const handleLogin = async ()=>{
     const ws = getWebSocket()
-    const res = await axios.post('http://localhost:5000/api/login', {email, password})
-    if(res.data.user.role==='admin'){
-    localStorage.setItem('x-token', res.data.token)
-    toast.success('Log in successful!')
-    setUser(res.data.user)
-    setData(initialState)
-    res.data.user && sendSocketMessage(ws, 'init', {id: res.data.user._id, role: res.data.user.role})
-    navigate('/dashboard')
-    }else{
-      toast.error('Something went wrong. Please ensure you are an admin to perform this action')
+    try {
+      if(!password || !email) return toast.error('Please provide crendentials')
+      const {data} = await createHttpRequest(POST_ACTION, ROUTE_LOGIN, {email, password})
+      if(data?.success){
+        const {data: res} = data
+        if(res && res?.user?.role==='admin'){
+          localStorage.setItem('x-token', res.token)
+          toast.success('Log in successful!')
+          setUser(res?.user)
+          setData(initialState)
+          data.user && sendSocketMessage(ws, 'init', {id: res.user._id, role: res.user.role})
+          navigate('/dashboard')
+        }else{
+          toast.error('Something went wrong. Please ensure you are an admin to perform this action')
+        }
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      // toast.error(error.response.data.message)
     }
     //  <Navigate to={'/dashboard'} />
   }
@@ -70,26 +83,6 @@ const handleLogin = async ()=>{
             </div>
           </div>
         </div>
-        {/* <div className="flex-1 md:ps-4">
-          <h1 className="text-2xl font-semibold mb-3 text-center">
-            For Candidate
-          </h1>
-          <div className="p-2">
-            <div className="rounded shadow-md md:p-6 md:mt-5 flex flex-col gap-1 md:gap-4 items-center">
-              <div className="relative w-full md:w-3/4 p-1">
-                <input id="input-email2" type="text" className="h-9 w-[100%] outline-none login-input border-bottom" />
-                <label htmlFor="input-email2" className="absolute top-3 left-3 text-gray-500 text-sm">Email</label>
-              </div>
-              <div className="relative w-full md:w-3/4 p-1">
-                <input id="input-password2" type="text" className="h-9 w-[100%] outline-none p-2 login-input border-bottom" />
-                <label htmlFor="input-password2" className="absolute top-3 left-3 text-gray-500 text-sm">Password</label>
-              </div>
-              <div className="relative w-full md:w-3/4 p-1">
-                <button onClick={()=> handleLogin('candidate')} className="cursor-pointer w-full p-1 bg-green-300 border-none outline-none">Login</button>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </div>
     </div>
   );

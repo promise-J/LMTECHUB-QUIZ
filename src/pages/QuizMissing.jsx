@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
 
 const QuizMissing = () => {
   return (
-    <div>Seems you weren't invited for this test. Please check your email for confirmation. </div>
-  )
-}
+    <div className="h-[100vh] d-flex justify-center items-center flex-column">
+      <h1>Seems you weren't invited for this test.</h1>
+      <h1>Please check your email for confirmation.</h1>
+      <p>Please reach out to <a href="mailto:chiemelapromise30@gmail.com">Admin</a></p>
+    </div>
+  );
+};
 
-export default QuizMissing
+export default QuizMissing;

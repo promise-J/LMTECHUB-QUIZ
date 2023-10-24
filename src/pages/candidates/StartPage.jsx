@@ -1,16 +1,21 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUserContext } from "../../context/Usercontext";
-import LoadingLogo from "../../components/loading/LoadingLogo";
 import { initializeWebSocket } from "../../context/websocket";
+import baseUrl from '../../api/baseUrl'
+import {GET_ACTION, POST_ACTION, PUT_ACTION} from '../../libs/routes_actions'
+import { ROUTE_GET_QUIZ, ROUTE_LOGIN, ROUTE_QUIZ_QUESTIONS, ROUTE_REGISTER, ROUTE_RESPONSE_START } from "../../libs/routes";
+import createHttpRequest from '../../api/httpRequest'
+import { X_TOKEN } from "../../libs/constants";
 
 const initialState = {
   username: "",
   email: "",
   password: "",
 };
+
+
 
 const StartPage = () => {
   const navigate = useNavigate();
@@ -22,6 +27,7 @@ const StartPage = () => {
   const [authState, setAuthState] = useState(false);
   const { setUser, user } = useUserContext();
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
 
   const { email, username, password } = data;
 
@@ -29,23 +35,21 @@ const StartPage = () => {
     initializeWebSocket();
   }, []);
 
+
   useEffect(() => {
+    const token = localStorage.getItem(X_TOKEN)
     const quizId = params.search.split("=")[1];
     const getQuiz = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          `http://localhost:5000/api/quiz/${quizId}`
-        );
-        setQuiz(data);
-        const { data: daata } = await axios.get(
-          `http://localhost:5000/api/quiz/questions/${quizId}`
-        );
-        setQuestions(daata);
+       const {data} = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${quizId}`)
+       setQuiz(data);
+       const res = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ_QUESTIONS}/${quizId}`)
+         setQuestions(res.data);
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        console.log(error);
+        console.log(error,'the error');
       }
     };
     if (quizId) {
@@ -59,40 +63,34 @@ const StartPage = () => {
   const handleAuth = async () => {
     try {
       if (authState) {
-        setLoading(true);
-        const res = await axios.post("http://localhost:5000/api/register", {
-          email,
-          password,
-          username,
-        });
+        setAuthLoading(true);
+        const res = await createHttpRequest(POST_ACTION, ROUTE_REGISTER, {email, password, username})
         toast.success("Registered successfully! Please login", { delay: 5 });
         setAuthState(!authState);
         setData(initialState);
-        setLoading(false);
+        setAuthLoading(false);
       } else {
         if(!password || !email){
           return toast.error('Please enter your credentials')
         }
-        setLoading(true);
+        setAuthLoading(true);
         if(!quiz.candidates.includes(email)){
           return navigate('/not-invited')
         }
         if(quiz.completedCandidates.includes(email)){
           return navigate('/quiz-completed')
         }
-        const res = await axios.post("http://localhost:5000/api/login", {
-          email,
-          password,
-        });
-        localStorage.setItem("x-token", res.data.token);
-        toast.success("Log in successful!", { delay: 5 });
-        setUser(res.data.user);
-        res.data.user && sendSocketMessage(ws, 'init', {id: res.data.user._id, role: res.data.user.role})
-        setLoading(false);
+        const {data} = await createHttpRequest(POST_ACTION, ROUTE_LOGIN, {email, password})
+        const {data: res} = data
+
+        localStorage.setItem("x-token", res.token);
+        setUser(res.user);
+        res.user && sendSocketMessage(ws, 'init', {id: res.user._id, role: res.user.role})
+        setAuthLoading(false);
         setData(initialState);
       }
     } catch (error) {
-      setLoading(false);
+      setAuthLoading(false);
       error?.response?.data.message && toast.error(error?.response?.data.message, { delay: 5 });
     }
   };
@@ -110,12 +108,26 @@ const StartPage = () => {
   const logoutAndBack = () => {
     localStorage.removeItem("x-token");
     setUser(null)
-    navigate("/");
+    navigate("/quiz/ended");
   };
 
-  if (loading) {
-    return <LoadingLogo />;
+  const startQuiz = async()=>{
+    const token = localStorage.getItem(X_TOKEN)
+    try {
+      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_RESPONSE_START}/${quiz._id}`, {email: user.email}, token)
+      if(data=== 'Seems you werent invited'){
+        return navigate('/not-invited')
+      }
+      navigate("/start-quiz", { state: { questions, quiz, user } })
+      toast.success(data)
+    } catch (error) {
+      console.log(error)
+    }
   }
+
+  // if (loading) {
+  //   return <LoadingLogo />;
+  // }
 
 
   return (
@@ -153,9 +165,7 @@ const StartPage = () => {
           </ul>
           {user && (
             <button
-              onClick={() =>
-                navigate("/start-quiz", { state: { questions, quiz, user } })
-              }
+              onClick={startQuiz}
               className="bg-blue-300 mt-4 py-1 rounded px-5"
             >
               Start
@@ -223,9 +233,9 @@ const StartPage = () => {
             ) : (
               <button
                 onClick={handleAuth}
-                className="border py-1 px-4 rounded-lg"
+                className={`border py-1 px-4 rounded-lg ${authLoading && 'bg-green-500 text-white'}`}
               >
-                Login
+                {authLoading ? 'Loading...' : 'Login'}
               </button>
             )}
             <p

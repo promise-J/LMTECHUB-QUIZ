@@ -1,16 +1,20 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { LiaEyeSolid } from "react-icons/lia";
 import { Link } from "react-router-dom";
+import createHttpRequest from "../api/httpRequest";
+import { GET_ACTION } from "../libs/routes_actions";
+import {ROUTE_QUIZ_QUESTIONS} from '../libs/routes'
+import { X_TOKEN } from "../libs/constants";
 
 const Quiz = ({ quiz }) => {
   const [questionLength, setQuestionLength] = useState(0)
 
   useEffect(()=>{
     const getAllQuestions = async()=>{
+      const token = localStorage.getItem(X_TOKEN)
       try {
-        const res = await axios.get(`http://localhost:5000/api/quiz/questions/${quiz._id}`)
+        const res = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ_QUESTIONS}/${quiz._id}`, {}, token)
         setQuestionLength(res.data.length)
       } catch (error) {
         console.log(error)
@@ -25,9 +29,6 @@ const Quiz = ({ quiz }) => {
     }
   };
 
-  const viewQuiz = (id) => {
-    Navigate("/");
-  };
   return (
     <div
     //   key={quiz._id}

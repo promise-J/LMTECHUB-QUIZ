@@ -13,19 +13,22 @@ import StartQuiz from "./pages/candidates/StartQuiz";
 import SuccessPage from "./pages/candidates/SuccessPage";
 import { useEffect, useState } from "react";
 import { useUserContext } from "./context/Usercontext";
-import axios from "axios";
 import AdminRoute from "./routing/AdminRoute";
 import LoadingLogo from "./components/loading/LoadingLogo";
 import QuizMissing from "./pages/QuizMissing";
 import { getWebSocket } from "./context/websocket";
-import LastRouteAccess from "./routing/LastRouteAccess";
 import QuizCompleted from "./pages/QuizCompleted";
 import LoggedoutCandidate from "./pages/candidates/LoggedoutCandidate";
+import {ADMIN} from './libs/user_role'
+import createHttpRequest from "./api/httpRequest";
+import { ROUTE_GET_USER } from "./libs/routes";
+import { GET_ACTION } from "./libs/routes_actions";
+import { ERROR_JWT_EXPIRED } from "./libs/error_messsge";
+import { X_TOKEN } from "./libs/constants";
 
 function App() {
   const { user, setUser } = useUserContext();
   const [loading, setLoading] = useState(false);
-  const URL_LINK = 'http://localhost:5173'
 
 
   // useEffect(() => {
@@ -45,6 +48,9 @@ function App() {
   //   user && initSocket()
   // }, []);
 
+  const [token, setToken] = useState(localStorage.getItem('x-token'))
+
+
   useEffect(() => {
     const ws = getWebSocket()
     if(ws.readyState === WebSocket.OPEN){
@@ -52,38 +58,27 @@ function App() {
     }
   });
   
-  
-  // useEffect(()=>{
-  //   if(user){
-  //     let pathname = localStorage.getItem('lastPathname')
-  //     pathname = (pathname===undefined || !pathname) ? '/' : pathname
-  //     console.log(URL_LINK+pathname)
-  //     window.location.href = URL_LINK + pathname
-  //   }
-  // },[localStorage.getItem('lastPathname'), localStorage.getItem('x-token')])
 
   useEffect(() => {
     const token = localStorage.getItem("x-token");
-    if (token) {
-      const getUser = async () => {
-        try {
-          setLoading(true);
-          const { data } = await axios.get("http://localhost:5000/api/user", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+    const getUser = async () => {
+      try {
+        setLoading(true);
+        const {data} = await createHttpRequest(GET_ACTION, ROUTE_GET_USER, null, token)
+        if(data.role===ADMIN){
           setUser(data);
-          // navigate(localStorage.getItem('lastPathname'))
           setToken(token);
-          setLoading(false);
-        } catch (error) {
-          if (error?.response?.data?.message === "jwt expired") {
-            localStorage.removeItem("x-token");
-            window.location.href = "/";
-          }
-          // console.log(error?.response?.data.message, "the error");
-          setLoading(false);
         }
-      };
+        setLoading(false);
+      } catch (error) {
+        if (error?.response?.data?.message === ERROR_JWT_EXPIRED) {
+          localStorage.removeItem(X_TOKEN);
+          window.location.href = "/";
+        }
+        setLoading(false);
+      }
+    };
+    if (token) {
       getUser();
 
       return () => {
@@ -100,7 +95,6 @@ function App() {
 
   return (
     <Router>
-        <LastRouteAccess />
       <Routes>
         <Route path="/" element={<Loginpage />} />
         <Route path="getting-started" element={<StartPage />} />

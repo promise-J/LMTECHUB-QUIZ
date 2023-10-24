@@ -1,53 +1,6 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
 import { LiaEyeSolid } from "react-icons/lia";
-import baseUrl from "../api/baseUrl";
-import LoadingLogo from "../components/loading/LoadingLogo";
-import { getWebSocket } from "../context/websocket";
 
 const SingleMonitor = ({ response, quizQuestions }) => {
-  const [userCandidate, setUserCandidate] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [responseAnswer, setResponseAnswer] = useState([]);
-  const [timeleft, setTimeleft] = useState(0);
-
-  useEffect(() => {
-    const ws = getWebSocket();
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.addEventListener("message", ({ data }) => {
-        data = JSON.parse(data);
-        const { answers, quizId, remainingMinutes, userId } = data;
-        if (userId === userCandidate?._id && quizQuestions[0].quizId._id === quizId) {
-          setTimeleft(remainingMinutes);
-          console.log(remainingMinutes, "from the monitor sideuuuuu");
-          setResponseAnswer(answers);
-        }
-      });
-    }
-  });
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("x-token");
-  //   const getUserByEmail = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const res = await axios.get(`${baseUrl}/user/${candidate}`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-  //       setUserCandidate(res.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   getUserByEmail();
-  // }, [candidate]);
-
-  // console.log(score, 'the compute function')
-
-  if (loading) {
-    return <LoadingLogo />;
-  }
 
   return (
     <tr className="border">
@@ -55,8 +8,8 @@ const SingleMonitor = ({ response, quizQuestions }) => {
         {response?.email}
       </td>
       <td className="p-2 border-black border-2">{response?.score} / {quizQuestions.length}</td>
-      <td className="p-2 border-black border-2">{timeleft} mins</td>
-      <td className="p-2 border-black border-2 text-yellow-500 animate-pulse font-bold">
+      <td className="p-2 border-black border-2">{(!['COMPLETED', 'IN-PROGRESS'].includes(response?.responseStatus) && response?.timeLeft === 0) ? 'N/A' : response?.timeLeft + 'mins'}</td>
+      <td className={`p-2 border-black border-2 ${response.responseStatus === 'COMPLETED' ? 'text-green-500' : response.responseStatus === 'IN-PROGRESS' ? 'text-yellow-500' : 'text-red-500'} ${response.responseStatus === 'IN-PROGRESS' && 'animate-pulse'} font-bold`}>
         {response.responseStatus}
       </td>
       <td className="p-2 border-black border-2">

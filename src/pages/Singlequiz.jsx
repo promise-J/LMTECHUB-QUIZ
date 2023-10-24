@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
-import useSingleQuiz from "../hooks/useSingleQuiz";
 import { BiEditAlt } from "react-icons/bi";
+import { AiOutlineDelete } from "react-icons/ai";
 import { FaListUl } from "react-icons/fa";
-import useCreateQuestion from "../hooks/useCreateQuestion";
-import useViewQuiz from "../hooks/useViewQuiz";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import baseUrl from "../api/baseUrl";
 import { toast } from "react-toastify";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import LoadingLogo from "../components/loading/LoadingLogo";
-import { useUserContext } from "../context/Usercontext";
-import isEmail from "../utils/emailValidator";
+import createHttpRequest from '../api/httpRequest'
+import {GET_ACTION, PUT_ACTION} from '../libs/routes_actions'
+import { ROUTE_ADD_CANDIDATE, ROUTE_GET_QUIZ } from "../libs/routes";
+import { X_TOKEN } from "../libs/constants";
 
 const Singlequiz = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const singleQuizHook = useSingleQuiz();
-  const createQuestion = useCreateQuestion();
-  const viewQuiz = useViewQuiz();
   const [currentQuiz, setCurrentQuiz] = useState(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ duration: "", title: "" });
@@ -27,9 +22,10 @@ const Singlequiz = () => {
 
   useEffect(() => {
     const getQuiz = async () => {
+      const token = localStorage.getItem(X_TOKEN)
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/quiz/${params.id}`);
+        const res = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${params.id}`, {}, token);
         setData({ duration: res.data.duration, title: res.data.title });
         setCurrentQuiz(res.data);
         setLoading(false);
@@ -46,29 +42,32 @@ const Singlequiz = () => {
     setCandidate(e.target.value)
   }
 
-  const emailCheck = (email)=>{
-    const regex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
-    regex.test()
+  const handleRemoveCandidate = async(candidate)=> {
+    try {
+      const token = localStorage.getItem(X_TOKEN)
+      if(confirm('Are you sure you want to remove this candidate?')){
+        const res = await createHttpRequest(PUT_ACTION, `${ROUTE_ADD_CANDIDATE}/${params.id}`, {candidate: candidate.trim()}, token)
+        toast.success(res.data.message)
+        navigate('/dashboard/viewquiz')
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
-
-
   const handleAddCandidate = async () => {
-    const token = localStorage.getItem('x-token')
+    const token = localStorage.getItem(X_TOKEN)
     const regex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
     const emailIsValid = regex.test(candidate)
     if(!emailIsValid){
       return toast.error('Please enter a valid email')
     }
     try {
-      // const res = await axios.put(`http://localhost:5000/api/quiz/addCandidate/${params.id}`, {headers: {Authorization: `Bearer ${token}`}})
-      const res = await axios.put(`http://localhost:5000/api/quiz/addCandidate/${params.id}`, {candidate: candidate.trim()}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await createHttpRequest(PUT_ACTION, `${ROUTE_ADD_CANDIDATE}/${params.id}`, {candidate: candidate.trim()}, token)
       toast.success(res.data.message);
       setCandidate('')
       navigate('/dashboard/viewquiz')
     } catch (error) {
-      console.log(error);
+      console.log('the add can err');
     }
   };
 
@@ -77,19 +76,29 @@ const Singlequiz = () => {
     setData({ ...data, [name]: value });
   };
 
+  const handleQuizUpdate = async()=>{
+    try {
+      const token = localStorage.getItem(X_TOKEN)
+      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_GET_QUIZ}/${params.id}`, {duration, title}, token)
+      console.log(data)
+      if(data.success){
+        toast.success('Quiz update successful')
+        navigate('/dashboard/viewquiz')
+      }else{
+        toast.error(data.error)
+      }
+    } catch (error) {
+      console.log('error')
+    }
+  }
+
   if (loading) {
     return <LoadingLogo />;
   }
 
+
   return (
     <div className="p-4 mt-3 relative">
-      {/* <div
-        title="Edit question"
-        onClick={() => singleQuizHook.onOpen()}
-        className="absolute top-6 right-8 cursor-pointer"
-      >
-        <BiEditAlt size={30} />
-      </div> */}
       <input
         className="border block my-3 p-2 w-1/2"
         type="text"
@@ -105,8 +114,7 @@ const Singlequiz = () => {
         onChange={handleChange}
       />{" "}
       <span>minutes</span>
-      {/* <h1 className="text-4xl font-semibold">{currentQuiz?.title}</h1> */}
-      {/* <h6 className="text-2xl my-4 font-light">{currentQuiz?.duration} mins</h6> */}
+      <button onClick={handleQuizUpdate} className="d-block my-3 border p-2 bg-gray-200 rounded">Update Quiz</button>
       <p className="text-green-500">
         {currentQuiz?.questions?.length} Questions
       </p>
@@ -127,18 +135,14 @@ const Singlequiz = () => {
           onClick={handleAddCandidate}
           />
       </div>
+          <ul>
+            {
+              currentQuiz?.candidates.map((c, idx)=>(
+                <li key={idx} className='flex items-center my-1'> <AiOutlineDelete onClick={()=> handleRemoveCandidate(c)} className='me-4' /> <span className='me-4'>{c}</span> </li>
+              ))
+            }
+          </ul>
       <ul className="flex flex-column gap-1 list-disc">
-        {/* {!loading && currentQuiz?.length > 0 ? (
-          currentQuiz?.candidates?.map((c) => (c, idx) => {
-            console.log('promise')
-
-            return <li className="flex items-center gap-4" key={idx}>
-              {c} <IoMdRemoveCircleOutline cursor={"pointer"} />
-            </li>;
-          })
-        ) : (
-          <p>Please add Candidate</p>
-        )} */}
       </ul>
       <h6 className="text-2xl">Questions</h6>
       <div
@@ -157,7 +161,7 @@ const Singlequiz = () => {
             navigate(`/dashboard/viewQuestions/${currentQuiz._id}`)
           }
         />
-        <button onClick={()=> navigate('/dashboard/monitorquiz', {state: {quizId: currentQuiz._id}})} className="animate-pulse text-green-400 font-bold ml-4">Monitor Quiz</button>
+        <button onClick={()=> navigate('/dashboard/monitorquiz', {state: {quizId: currentQuiz?._id}})} className="animate-pulse font-bold ml-4">Monitor Quiz</button>
       </div>
     </div>
   );

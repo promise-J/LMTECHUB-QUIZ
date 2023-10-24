@@ -6,7 +6,7 @@ const SuccessPage = () => {
 
     const logout = ()=>{
       localStorage.removeItem('x-token')
-      navigate('/quiz/ended')
+      navigate('/quiz/ended', {state: {}})
     }
 
   return (

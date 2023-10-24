@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 // import { questions } from "../../data";
 import Questions from "./Questions";
 import QuestionButton from "../../components/button/QuestionButton";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUserContext } from "../../context/Usercontext";
 
 const StartQuiz = () => {
   const { state } = useLocation();
+  const navigate = useNavigate()
   // const minutes = 60;
   const seconds = 60;
   const [quiz, setQuiz] = useState(null);
@@ -16,7 +18,7 @@ const StartQuiz = () => {
   );
   const [remainingSeconds, setRemainingSeconds] = useState(seconds - 1);
   const [answers, setAnswers] = useState([]);
-  const [user, setUser] = useState(null);
+  const {setUser, user} = useUserContext()
 
   useEffect(() => {
     const getQuestions = () => {
@@ -28,6 +30,14 @@ const StartQuiz = () => {
     };
     getQuestions();
   }, []);
+
+  useEffect(()=>{
+    const user = state?.user
+    const token = localStorage.getItem('x-token')
+    if(!token){
+      navigate('/quiz/ended', {state: {}})
+    }
+  })
 
   useEffect(() => {
     // const interval = setInterval(() => {
@@ -70,11 +80,11 @@ const StartQuiz = () => {
           </div>
           <div className="py-3 px-4 overflow-y-scroll no-scrollbar">
             <span className="text-xl font-bold">
-              Welcome! {user?.username.toUpperCase()}{" "}
+              {/* Welcome! {user?.username.toUpperCase()}{" "} */}
             </span>
-            <h3 className="font-semibold mb-4">Questions ({quests.length})</h3>
+            <h3 className="font-semibold mb-4">Questions ({quests?.length})</h3>
             <div className="flex p-2 flex-column gap-2 border-r-green-500 border-r-2">
-              {quests.map((q, idx) => (
+              {quests?.map((q, idx) => (
                 <QuestionButton
                   key={q._id}
                   q={q}

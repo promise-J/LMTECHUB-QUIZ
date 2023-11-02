@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../context/Usercontext";
 import LoadingLogo from "../../components/loading/LoadingLogo";
-import baseUrl from "../../api/baseUrl";
 import createHttpRequest from '../../api/httpRequest'
 import {POST_ACTION, PUT_ACTION} from '../../libs/routes_actions'
 import { ROUTE_RESPONSE_QUIZ, ROUTE_RESPONSE_UPDATE_TIME } from "../../libs/routes";
@@ -76,7 +75,7 @@ const Questions = ({
   // isRefreshed && autoSubmit()
 
   function figureAnswers() {
-    const res = quests.map((q) => null);
+    const res = quests.map((_) => null);
     for (let i = 0; i < answers.length; i++) {
       res[answers[i].qIdx] = answers[i].ansIdx;
     }
@@ -96,10 +95,16 @@ const Questions = ({
             "Are you sure you want to submit? You can not undo this action"
           )
         ) {
+          const {data} = await createHttpRequest(POST_ACTION, `${ROUTE_RESPONSE_QUIZ}/${quizId}`, {response, userId, email}, token)
+          if(!data.success){
+            localStorage.removeItem("x-token");
+            setUser(null);
+            navigate("/quiz/ended");
+            return toast.error(data.message)
+          }
           setLoading(true);
-          await createHttpRequest(POST_ACTION, `${ROUTE_RESPONSE_QUIZ}/${quizId}`, {response, userId, email}, token)
-          setLoading(false);
           toast.success("Your response has been sent");
+          setLoading(false);
           navigate("/quiz/success", { state: {} });
           localStorage.removeItem("x-token");
           setUser(null);
@@ -141,16 +146,16 @@ const Questions = ({
           (a, b) => a.qIdx - b.qIdx
         );
       }
-      const newAns = [...answers].map((a) => a.ansIdx);
-      const updateTime = async () => {
+      // const newAns = [...answers].map((a) => a.ansIdx);
+      const updateTime = async (response) => {
         const token = localStorage.getItem(X_TOKEN)
         try {
-          await createHttpRequest(PUT_ACTION, `${ROUTE_RESPONSE_UPDATE_TIME}/${quizId}`, {timeLeft: remainingMinutes, email}, token)
+          await createHttpRequest(PUT_ACTION, `${ROUTE_RESPONSE_UPDATE_TIME}/${quizId}`, {timeLeft: remainingMinutes, email, userResponse: response}, token)
         } catch (error) {
           console.log(error);
         }
       };
-      updateTime();
+      updateTime([...answers].map(a=> a.ansIdx));
       return [...answers];
     });
   };

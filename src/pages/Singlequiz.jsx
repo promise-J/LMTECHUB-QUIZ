@@ -47,8 +47,9 @@ const Singlequiz = () => {
       const token = localStorage.getItem(X_TOKEN)
       if(confirm('Are you sure you want to remove this candidate?')){
         const res = await createHttpRequest(PUT_ACTION, `${ROUTE_ADD_CANDIDATE}/${params.id}`, {candidate: candidate.trim()}, token)
+        console.log(res,' from remove')
         toast.success(res.data.message)
-        navigate('/dashboard/viewquiz')
+        navigate(`/dashboard/viewquiz/${params.id}`)
       }
     } catch (error) {
       console.log(error)
@@ -162,6 +163,7 @@ const Singlequiz = () => {
           }
         />
         <button onClick={()=> navigate('/dashboard/monitorquiz', {state: {quizId: currentQuiz?._id}})} className="animate-pulse font-bold ml-4">Monitor Quiz</button>
+        
       </div>
     </div>
   );

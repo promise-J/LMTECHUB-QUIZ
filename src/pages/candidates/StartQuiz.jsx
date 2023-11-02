@@ -32,7 +32,6 @@ const StartQuiz = () => {
   }, []);
 
   useEffect(()=>{
-    const user = state?.user
     const token = localStorage.getItem('x-token')
     if(!token){
       navigate('/quiz/ended', {state: {}})
@@ -67,7 +66,6 @@ const StartQuiz = () => {
     };
   }, [remainingSeconds, remainingMinutes]);
 
-  // console.log(answers.length, questionNumber + 1)
 
   return (
     <div className="p-4">

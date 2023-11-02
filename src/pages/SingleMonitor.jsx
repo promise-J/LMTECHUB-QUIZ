@@ -1,6 +1,12 @@
 import { LiaEyeSolid } from "react-icons/lia";
+import { useNavigate } from "react-router-dom";
 
 const SingleMonitor = ({ response, quizQuestions }) => {
+  const navigate = useNavigate()
+
+  const handleNavigate = (response)=>{
+    navigate(`/dashboard/live-monitor/${response._id}`, {state: {quizQuestions, response}})
+  }
 
   return (
     <tr className="border">
@@ -13,7 +19,7 @@ const SingleMonitor = ({ response, quizQuestions }) => {
         {response.responseStatus}
       </td>
       <td className="p-2 border-black border-2">
-        <LiaEyeSolid cursor={"pointer"} className="hover:scale-[1.3]" />
+          <LiaEyeSolid onClick={()=> handleNavigate(response)} cursor={"pointer"} className="hover:scale-[1.3]" />
       </td>
     </tr>
   );

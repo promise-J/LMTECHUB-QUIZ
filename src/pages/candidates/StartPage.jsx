@@ -64,30 +64,34 @@ const StartPage = () => {
     try {
       if (authState) {
         setAuthLoading(true);
-        const res = await createHttpRequest(POST_ACTION, ROUTE_REGISTER, {email, password, username})
+        const res = await createHttpRequest(POST_ACTION, ROUTE_REGISTER, {email: email.toLowerCase(), password, username})
         toast.success("Registered successfully! Please login", { delay: 5 });
         setAuthState(!authState);
         setData(initialState);
         setAuthLoading(false);
       } else {
+        if(email && !quiz.candidates.includes(email.toLowerCase())){
+          return navigate('/not-invited')
+        }
         if(!password || !email){
           return toast.error('Please enter your credentials')
         }
         setAuthLoading(true);
-        if(!quiz.candidates.includes(email)){
-          return navigate('/not-invited')
-        }
-        if(quiz.completedCandidates.includes(email)){
+        if(quiz.completedCandidates.includes(email.toLowerCase())){
           return navigate('/quiz-completed')
         }
-        const {data} = await createHttpRequest(POST_ACTION, ROUTE_LOGIN, {email, password})
-        const {data: res} = data
+        const {data} = await createHttpRequest(POST_ACTION, ROUTE_LOGIN, {email: email.toLowerCase(), password})
+        if(data.success){
 
-        localStorage.setItem("x-token", res.token);
-        setUser(res.user);
-        res.user && sendSocketMessage(ws, 'init', {id: res.user._id, role: res.user.role})
-        setAuthLoading(false);
-        setData(initialState);
+          localStorage.setItem("x-token", data.token);
+          setUser(data.user);
+          res.user && sendSocketMessage(ws, 'init', {id: data.user._id, role: data.user.role})
+          setAuthLoading(false);
+          setData(initialState);
+        }else{
+          setAuthLoading(false)
+          return toast.error(data?.message || 'Something went wrong')
+        }
       }
     } catch (error) {
       setAuthLoading(false);
@@ -114,20 +118,19 @@ const StartPage = () => {
   const startQuiz = async()=>{
     const token = localStorage.getItem(X_TOKEN)
     try {
-      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_RESPONSE_START}/${quiz._id}`, {email: user.email}, token)
-      if(data=== 'Seems you werent invited'){
+      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_RESPONSE_START}/${quiz._id}`, {email: user.email.toLowerCase()}, token)
+      if(!data.success){
+        localStorage.removeItem("x-token");
+        setUser(null)
         return navigate('/not-invited')
       }
+      
       navigate("/start-quiz", { state: { questions, quiz, user } })
       toast.success(data)
     } catch (error) {
       console.log(error)
     }
   }
-
-  // if (loading) {
-  //   return <LoadingLogo />;
-  // }
 
 
   return (

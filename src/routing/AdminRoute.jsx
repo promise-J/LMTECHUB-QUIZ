@@ -12,6 +12,7 @@ import ViewQuestions from "../pages/ViewQuestions";
 import NotFound from "../pages/NotFound";
 import { useUserContext } from "../context/Usercontext";
 import MonitorQuiz from "../pages/monitorQuiz";
+import LiveMonitor from "../pages/LiveMonitor";
 
 const AdminRoute = ({ component: Component, ...rest }) => {
   const {user} = useUserContext()
@@ -33,6 +34,7 @@ const AdminRoute = ({ component: Component, ...rest }) => {
       <Route path="createQuestion/:id" element={<CreateQuestion />} />
       <Route path="editQuestion/:id" element={<EditQuestion />} />
       <Route path="viewQuestions/:id" element={<ViewQuestions />} />
+      <Route path="live-monitor/:responseId" element={<LiveMonitor />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

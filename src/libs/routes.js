@@ -1,5 +1,6 @@
 
 export const ROUTE_LOGIN = '/login'
+export const ROUTE_GOOGLE_AUTH = '/google-auth'
 export const ROUTE_REGISTER= '/register'
 export const ROUTE_GET_USER = '/user'
 export const ROUTE_QUIZ_QUESTIONS = '/quiz/questions'

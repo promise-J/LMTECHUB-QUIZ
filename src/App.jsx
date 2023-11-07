@@ -25,6 +25,7 @@ import { ROUTE_GET_USER } from "./libs/routes";
 import { GET_ACTION } from "./libs/routes_actions";
 import { ERROR_JWT_EXPIRED } from "./libs/error_messsge";
 import { X_TOKEN } from "./libs/constants";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   const { user, setUser } = useUserContext();
@@ -97,6 +98,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Loginpage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="getting-started" element={<StartPage />} />
         <Route path="start-quiz" element={<StartQuiz />} />
         <Route path="not-invited" element={<QuizMissing />} />

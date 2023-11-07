@@ -2,93 +2,39 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/Usercontext";
 import { toast } from "react-toastify";
-import sendSocketMessage from "../context/sendSocketMessage";
-import { getWebSocket } from "../context/websocket";
 import createHttpRequest from "../api/httpRequest";
-import { ROUTE_GOOGLE_AUTH, ROUTE_LOGIN } from "../libs/routes";
+import { ROUTE_REGISTER } from "../libs/routes";
 import { POST_ACTION } from "../libs/routes_actions";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebaseconfig";
-import {FcGoogle} from 'react-icons/fc'
 
-
-const Loginpage = () => {
-  
-  const initialState = { email: "", password: "" };
+const Register = () => {
+  const initialState = { email: "", password: "", role: "", username: "" };
   const [data, setData] = useState(initialState);
   const { setUser } = useUserContext();
 
-  const handleLoginWithGoogle = async()=>{
-    const provider = new GoogleAuthProvider()
-    provider.setCustomParameters({prompt: 'select_account'})
-    signInWithPopup(auth, provider).then(result=>{
-      console.log(result.user.email, result.user.displayName)
-      createHttpRequest(POST_ACTION, ROUTE_GOOGLE_AUTH, {email: result.user.email, displayName: result.user.displayName},{})
-      .then(({data: res})=> {
-        console.log(res,'the res')
-        if (res?.success) {
-          if (res && res?.user?.role === "admin") {
-            localStorage.setItem("x-token", res.token);
-            toast.success("Log in successful!");
-            setUser(res?.user);
-            setData(initialState);
-            res.user &&
-              sendSocketMessage(ws, "init", {
-                id: res.user._id,
-                role: res.user.role,
-              });
-            navigate("/dashboard");
-          } else {
-            toast.error(
-              "Something went wrong. Please ensure you are an admin to perform this action"
-            );
-          }
-        } else {
-          toast.error(data?.message);
-        }
-        console.log(res, 'from google auth')
-      })
-    })
-  }
-
-  const { email, password } = data;
+  const { email, password, role, username } = data;
 
   const navigate = useNavigate();
   // const {user} = useWebsocket()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value)
     setData({ ...data, [name]: value });
   };
 
-  const handleLogin = async () => {
-    const ws = getWebSocket();
+  const handleRegister = async () => {
     try {
       if (!password || !email){
         return toast.error("Please provide crendentials");
       }
-      const { data } = await createHttpRequest(POST_ACTION, ROUTE_LOGIN, {
+      const { data } = await createHttpRequest(POST_ACTION, ROUTE_REGISTER, {
         email: email.toLowerCase(),
         password,
+        role,
+        username
       });
       if (data?.success) {
-        const res = data;
-        if (res && res?.user?.role === "admin") {
-          localStorage.setItem("x-token", res.token);
-          toast.success("Log in successful!");
-          setUser(res?.user);
-          setData(initialState);
-          data.user &&
-            sendSocketMessage(ws, "init", {
-              id: res.user._id,
-              role: res.user.role,
-            });
-          navigate("/dashboard");
-        } else {
-          toast.error(
-            "Something went wrong. Please ensure you are an admin to perform this action"
-          );
-        }
+        navigate('/')
       } else {
         toast.error(data?.message);
       }
@@ -114,7 +60,7 @@ const Loginpage = () => {
       <div className="md:p-4 flex flex-col md:flex-row justify-around gap-8 md:gap-2">
         <div className="flex-1 md:ps-4">
           <h1 className="text-2xl font-semibold mb-3 text-center">
-            For Company
+            Create Account (Company | Candidate)
           </h1>
           <div className="p-2">
             <div className="shadow-md rounded md:p-6 md:mt-5  flex flex-col gap-1 md:gap-4 items-center">
@@ -136,6 +82,22 @@ const Loginpage = () => {
               </div>
               <div className="relative w-full md:w-3/4 p-1">
                 <input
+                  id="input-username1"
+                  value={username}
+                  name="username"
+                  onChange={handleChange}
+                  type="text"
+                  className="h-9 w-[100%] outline-none login-input border-bottom"
+                />
+                <label
+                  htmlFor="input-username1"
+                  className="absolute top-3 left-3 text-gray-500 text-sm"
+                >
+                  Username
+                </label>
+              </div>
+              <div className="relative w-full md:w-3/4 p-1">
+                <input
                   id="input-password1"
                   value={password}
                   name="password"
@@ -149,21 +111,24 @@ const Loginpage = () => {
                 >
                   Password
                 </label>
+                <div className="my- p-3 flex justify-content-around">
+                  <label htmlFor="">Company</label>
+                  <input type="radio" onChange={handleChange} name='role' value={'admin'} />
+                  <label htmlFor="">Candidate</label>
+                  <input type="radio" onChange={handleChange} name='role' defaultChecked value={'candidate'} />
+                </div>
               </div>
               <div className="relative w-full md:w-3/4 p-1">
                 <button
-                  onClick={() => handleLogin()}
+                  onClick={() => handleRegister()}
                   className="cursor-pointer w-full p-1 bg-green-300 border-none outline-none"
                 >
-                  Login
+                  Register
                 </button>
-                <div className="flex justify-content-center p-2">
-                  <button className="flex font-semibold" onClick={handleLoginWithGoogle}>Sign up with Google <FcGoogle size={25} /></button>
-                </div>
-                <div className="my-3">
-                  <p>Not registered? <Link className="ms-3" to={'/register'}>Register now!</Link></p>
-                </div>
               </div>
+              <div className="my-3">
+                  <p>Already registered? <Link className="ms-3" to={'/'}>Login now!</Link></p>
+                </div>
             </div>
           </div>
         </div>
@@ -172,4 +137,4 @@ const Loginpage = () => {
   );
 };
 
-export default Loginpage;
+export default Register;

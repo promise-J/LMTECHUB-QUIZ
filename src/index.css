@@ -20,9 +20,12 @@
   }
 
 .login-input:focus + label {
-    top: -5px;
-    font-size: 9px;
+    top: -9px;
+    font-size: 12px;
     left: 6x;
+    background-color: white;
+    font-weight: bold;
+    color: green;
 }
 
 .login-input{
@@ -62,4 +65,58 @@ dialog::backdrop{
 .link{
     text-decoration: none;
     color: inherit;
+}
+
+.personal-animate{
+    animation: sidebar-animate 0.3s linear;
+}
+
+.menu-container{
+    background-color: rgba(24, 23, 43, 0.565);
+}
+
+.menu-inner-container{
+    background-color: rgb(24, 23, 43);
+}
+
+.header_active_link{
+    border-bottom: solid 2px rgb(245,158,10);
+}
+.header_link::after{
+    content: '';
+    position: absolute;
+    bottom: -2.2px;
+    left: 45%;
+    width: 0%;
+    height: 2px;
+    transition: 0.4s ease-in;
+    background-color: rgb(245,158,10);
+}
+.header_link:hover::after{
+    background-color: rgb(245,158,10);
+    width: 100%;
+    left: -5px;
+}
+
+.user-profile:hover > .profile-pop{
+    display: flex;
+}
+
+
+.profile-pop{
+    display: none;
+}
+
+@keyframes sidebar-animate {
+    0%{
+        transform: translateX(100%) rotate(5deg);
+    }100%{
+        transform: translateX(0%) rotate(-5deg);
+    }
+}
+
+@media screen and (width < 1111px) {
+    .welcome-header{
+        flex-direction: column;
+    }
 }

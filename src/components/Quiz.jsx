@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { LiaEyeSolid } from "react-icons/lia";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import createHttpRequest from "../api/httpRequest";
-import { GET_ACTION } from "../libs/routes_actions";
+import { DELETE_ACTION, GET_ACTION } from "../libs/routes_actions";
 import {ROUTE_QUIZ_QUESTIONS} from '../libs/routes'
 import { X_TOKEN } from "../libs/constants";
+import { ROUTE_GET_QUIZ } from "../libs/routes";
 
-const Quiz = ({ quiz }) => {
+const Quiz = ({ quiz, quizes, setQuizes }) => {
   const [questionLength, setQuestionLength] = useState(0)
+  const navigate = useNavigate()
 
   useEffect(()=>{
     const getAllQuestions = async()=>{
@@ -26,6 +28,11 @@ const Quiz = ({ quiz }) => {
 
   const deleteQuiz = async (id) => {
     if (confirm("Are you sure you want to delete this quiz?")) {
+      const newQuizState = quizes.filter(quiz=> quiz._id !== id)
+      setQuizes(newQuizState)
+      const token = localStorage.getItem(X_TOKEN)
+      const res = await createHttpRequest(DELETE_ACTION, `${ROUTE_GET_QUIZ}/${quiz?._id}`, {}, token)
+      navigate('/dashboard/viewquiz')
     }
   };
 

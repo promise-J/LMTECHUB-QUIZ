@@ -31,7 +31,6 @@ const CreateQuiz = () => {
     try {
       setLoading(true)
       const res = await createHttpRequest(POST_ACTION, ROUTE_POST_QUIZ, {...quizObject}, token)
-      console.log(res)
 
       setLoading(false)
       toast.success('Quiz Created')
@@ -49,8 +48,9 @@ const CreateQuiz = () => {
 
 
   return (
-    <div className="p-3 mt-4">
-      <div className="flex flex-column justify-center my-2 p-3">
+    <div className="p-3 mt-4 flex justify-center">
+      <div className="w-full md:w-1/2 p-3">
+      <div className="flex flex-column justify-center my-2 py-3">
         <p className="me-4 font-semibold">Title: </p>
         <input
           value={title}
@@ -58,26 +58,27 @@ const CreateQuiz = () => {
           onChange={handleChange}
           type="text"
           placeholder="Enter Quiz Title"
-          className="w-1/2 p-2 outline"
+          className="w-1/2 p-2 border w-full"
         />
       </div>
-      <div className="flex flex-column justify-center my-2 p-3">
+      <div className="flex flex-column justify-center my-2 py-3">
         <p className="me-4 font-semibold">Duration: </p>
         <input
           type="text"
           value={duration}
           name="duration"
           onChange={handleChange}
-          placeholder="Enter Quiz Duration"
-          className="w-1/2 p-2 outline"
+          placeholder="e.g 20 (in minutes)"
+          className="w-1/2 p-2 border w-full"
         />
       </div>
       <button
         onClick={handleSubmit}
-        className="outline py-1 px-4 bg-purple-500 text-white rounded"
+        className="py-2 px-4 bg-gray-200 hover:bg-gray-100 rounded w-full my-3"
       >
         Create Quiz
       </button>
+    </div>
     </div>
   );
 };

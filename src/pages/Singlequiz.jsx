@@ -99,23 +99,24 @@ const Singlequiz = () => {
 
 
   return (
-    <div className="p-4 mt-3 relative">
+    <div className="mt-3 relative flex justify-center">
+      <div className=" p-2 w-full md:w-1/3">
       <input
-        className="border block my-3 p-2 w-1/2"
+        className="border block my-3 p-2 w-full"
         type="text"
         value={title}
         name="title"
         onChange={handleChange}
       />
       <input
-        className="border my-3 p-2 w-1/2"
+        className="border my-3 p-2 w-full"
         type="number"
         value={duration}
         name="duration"
         onChange={handleChange}
       />{" "}
       <span>minutes</span>
-      <button onClick={handleQuizUpdate} className="d-block my-3 border p-2 bg-gray-200 rounded">Update Quiz</button>
+      <button onClick={handleQuizUpdate} className="my-3 border p-2 bg-gray-200 rounded w-full hover:bg-gray-100">Update Quiz</button>
       <p className="text-green-500">
         {currentQuiz?.questions?.length} Questions
       </p>
@@ -127,7 +128,7 @@ const Singlequiz = () => {
           name="candidate"
           onChange={handleCandidate}
           value={candidate}
-          className="my-2 outline rounded-md p-1 w-1/2"
+          className="my-2 outline rounded-md p-1 w-full"
         />
         
           <AiOutlineFileAdd
@@ -136,10 +137,10 @@ const Singlequiz = () => {
           onClick={handleAddCandidate}
           />
       </div>
-          <ul>
+          <ul className="flex flex-col w-full items-start p-0 w-full md:w-1/2">
             {
               currentQuiz?.candidates.map((c, idx)=>(
-                <li key={idx} className='flex items-center my-1'> <AiOutlineDelete onClick={()=> handleRemoveCandidate(c)} className='me-4' /> <span className='me-4'>{c}</span> </li>
+                <li key={idx} className='flex my-1'> <AiOutlineDelete onClick={()=> handleRemoveCandidate(c)} className='me-1' /> <span className='me-4'>{c.slice(0, 12)}...</span> </li>
               ))
             }
           </ul>
@@ -147,24 +148,28 @@ const Singlequiz = () => {
       </ul>
       <h6 className="text-2xl">Questions</h6>
       <div
-        className="w-fit p-2 my-3 flex px-3 gap-3 cursor-pointer"
+        className="w-full p-2 my-3 flex px-3 gap-3 cursor-pointer"
         title="Create | View"
       >
+        <div className="flex-1 p-2 my-3 flex px-3 gap-3 cursor-pointer">
+
         <BiEditAlt
           size={16}
           onClick={() =>
             navigate(`/dashboard/createQuestion/${currentQuiz._id}`)
           }
-        />{" "}
+          />{" "}
         <FaListUl
           size={16}
           onClick={() =>
             navigate(`/dashboard/viewQuestions/${currentQuiz._id}`)
           }
-        />
+          />
+          </div>
         <button onClick={()=> navigate('/dashboard/monitorquiz', {state: {quizId: currentQuiz?._id}})} className="animate-pulse font-bold ml-4">Monitor Quiz</button>
         
       </div>
+    </div>
     </div>
   );
 };

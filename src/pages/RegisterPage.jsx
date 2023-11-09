@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import createHttpRequest from "../api/httpRequest";
 import { ROUTE_REGISTER } from "../libs/routes";
 import { POST_ACTION } from "../libs/routes_actions";
+import pageImg from '/exam.jpeg'
+import Header from "../components/Header";
 
 const Register = () => {
   const initialState = { email: "", password: "", role: "", username: "" };
@@ -18,7 +20,6 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value)
     setData({ ...data, [name]: value });
   };
 
@@ -34,7 +35,7 @@ const Register = () => {
         username
       });
       if (data?.success) {
-        navigate('/')
+        navigate('/login')
       } else {
         toast.error(data?.message);
       }
@@ -54,24 +55,25 @@ const Register = () => {
 
   return (
     <div className="md:p-4">
+      <Header />
       <h1 className="font-bold text-3xl text-center my-5 text-sky-300">
         LMTechub Quiz Application
       </h1>
       <div className="md:p-4 flex flex-col md:flex-row justify-around gap-8 md:gap-2">
-        <div className="flex-1 md:ps-4">
+        <div className="flex-1 md:ps-4 p-5">
           <h1 className="text-2xl font-semibold mb-3 text-center">
             Create Account (Company | Candidate)
           </h1>
-          <div className="p-2">
-            <div className="shadow-md rounded md:p-6 md:mt-5  flex flex-col gap-1 md:gap-4 items-center">
-              <div className="relative w-full md:w-3/4 p-1">
+          <div className="p-3 gap-5 flex justify-center flex-col-reverse md:flex-row md:items-center">
+            <div className="shadow-md w-full md:w-2/3 lg:w-1/3 rounded md:p-6 md:mt-5  flex flex-col gap-1 md:gap-4 items-center">
+              <div className="relative w-full md:w-3/4 p-1 mb-3">
                 <input
                   id="input-email1"
                   value={email}
                   name="email"
                   onChange={handleChange}
                   type="text"
-                  className="h-9 w-[100%] outline-none login-input border-bottom"
+                  className="h-9 w-[100%] outline-none login-input border border-green-200"
                 />
                 <label
                   htmlFor="input-email1"
@@ -80,14 +82,14 @@ const Register = () => {
                   Email
                 </label>
               </div>
-              <div className="relative w-full md:w-3/4 p-1">
+              <div className="relative w-full md:w-3/4 p-1 mb-3">
                 <input
                   id="input-username1"
                   value={username}
                   name="username"
                   onChange={handleChange}
                   type="text"
-                  className="h-9 w-[100%] outline-none login-input border-bottom"
+                  className="h-9 w-[100%] outline-none login-input border border-green-200"
                 />
                 <label
                   htmlFor="input-username1"
@@ -96,14 +98,14 @@ const Register = () => {
                   Username
                 </label>
               </div>
-              <div className="relative w-full md:w-3/4 p-1">
+              <div className="relative w-full md:w-3/4 p-1 mb-3">
                 <input
                   id="input-password1"
                   value={password}
                   name="password"
                   onChange={handleChange}
                   type="password"
-                  className="h-9 w-[100%] outline-none p-2 login-input border-bottom"
+                  className="h-9 w-[100%] outline-none login-input border border-green-200"
                 />
                 <label
                   htmlFor="input-password1"
@@ -118,10 +120,10 @@ const Register = () => {
                   <input type="radio" onChange={handleChange} name='role' defaultChecked value={'candidate'} />
                 </div>
               </div>
-              <div className="relative w-full md:w-3/4 p-1">
+              <div className="relative w-full md:w-3/4 p-1 mb-3">
                 <button
                   onClick={() => handleRegister()}
-                  className="cursor-pointer w-full p-1 bg-green-300 border-none outline-none"
+                  className="cursor-pointer w-full p-1 bg-gray-200 hover:bg-gray-100 border-none outline-none"
                 >
                   Register
                 </button>
@@ -130,6 +132,10 @@ const Register = () => {
                   <p>Already registered? <Link className="ms-3" to={'/'}>Login now!</Link></p>
                 </div>
             </div>
+            <div className="w-full md:w-2/3 lg:w-1/3 rounded md:p-6 md:mt-3 flex flex-col gap-1 md:gap-4 items-center">
+              <img src={pageImg} className="h-full" alt="" />
+            </div>
+
           </div>
         </div>
       </div>

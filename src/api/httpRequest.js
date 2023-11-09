@@ -12,7 +12,7 @@ async function createHttpRequest(
 ) {
   let res;
   try {
-    if (requestType === "put" || requestType === "post" || requestType === "delete") {
+    if (requestType === "put" || requestType === "post") {
       res = await axios[requestType](`${baseUrl}${reqPath}`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -7,10 +7,19 @@ import createHttpRequest from "../api/httpRequest";
 import { GET_ACTION } from "../libs/routes_actions";
 import { ROUTE_QUIZES } from "../libs/routes";
 import { X_TOKEN } from "../libs/constants";
+import { Link } from "react-router-dom";
 
 const Quizes = () => {
   const [quizes, setQuizes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [quizPerPage] = useState(3);
+
+
+  const indexOfLastQuiz = currentPage * quizPerPage;
+  const indexOfFirstQuiz = indexOfLastQuiz - quizPerPage;
+  const currentPosts = quizes.slice(indexOfFirstQuiz, indexOfLastQuiz);
 
   useEffect(() => {
     const getQuizes = async () => {
@@ -32,20 +41,19 @@ const Quizes = () => {
   const displayQuiz = (quiz)=>{
     return loading ? <p>Loading...</p>
     //  <QuizLoading key={quiz._id} /> 
-    : <Quiz  key={quiz._id} quiz={quiz} />
+    : <Quiz  key={quiz._id} quizes={quizes} setQuizes={setQuizes} quiz={quiz} />
   }
   if(loading){
     return <LoadingLogo />
   }
 
-  // if(quizes.length < 1){
-  //   return (
-  //   <div className="md:p-5 p-2 mt-4">
-  //       <h1 className="text-center">There is no quiz to display</h1>
-  //   </div>
-
-  //   )
-  // }
+  if(quizes.length < 1){
+    return <div className="md:p-5 p-2 mt-4">
+             <div className="grid gap-5">
+               <h4 className="text-center">There is no quiz yet. <Link to={'/dashboard/createquiz'}>Create Quiz</Link></h4>
+             </div>
+           </div>
+  }
   
   return (
     <div className="md:p-5 p-2 mt-4">

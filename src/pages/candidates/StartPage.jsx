@@ -5,7 +5,7 @@ import { useUserContext } from "../../context/Usercontext";
 import { initializeWebSocket } from "../../context/websocket";
 import baseUrl from '../../api/baseUrl'
 import {GET_ACTION, POST_ACTION, PUT_ACTION} from '../../libs/routes_actions'
-import { ROUTE_GET_QUIZ, ROUTE_LOGIN, ROUTE_QUIZ_QUESTIONS, ROUTE_REGISTER, ROUTE_RESPONSE_START } from "../../libs/routes";
+import { ROUTE_QUIZ, ROUTE_LOGIN, ROUTE_QUIZ_QUESTIONS, ROUTE_REGISTER, ROUTE_RESPONSE_START } from "../../libs/routes";
 import createHttpRequest from '../../api/httpRequest'
 import { X_TOKEN } from "../../libs/constants";
 
@@ -42,7 +42,8 @@ const StartPage = () => {
     const getQuiz = async () => {
       try {
         setLoading(true);
-       const {data} = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${quizId}`)
+       const {data} = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ}/${quizId}`)
+       console.log(data,'the data')
        setQuiz(data);
        const res = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ_QUESTIONS}/${quizId}`)
          setQuestions(res.data);
@@ -65,7 +66,7 @@ const StartPage = () => {
       if (authState) {
         setAuthLoading(true);
         const res = await createHttpRequest(POST_ACTION, ROUTE_REGISTER, {email: email.toLowerCase(), password, username})
-        toast.success("Registered successfully! Please login", { delay: 5 });
+        toast.success("Registered successfully! Please login", {autoClose: 2000});
         setAuthState(!authState);
         setData(initialState);
         setAuthLoading(false);
@@ -126,7 +127,7 @@ const StartPage = () => {
       }
       
       navigate("/start-quiz", { state: { questions, quiz, user } })
-      toast.success(data)
+      toast.success(data.message, {autoClose: 2000})
     } catch (error) {
       console.log(error)
     }

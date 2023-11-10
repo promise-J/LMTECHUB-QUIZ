@@ -1,12 +1,11 @@
 import React, { useRef, useState } from "react";
-import { GrFormAdd } from "react-icons/gr";
 import { VscPass } from "react-icons/vsc";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import baseUrl from "../api/baseUrl";
 import createHttpRequest from "../api/httpRequest";
 import { PUT_ACTION } from "../libs/routes_actions";
-import { ROUTE_EDIT_QUESTION } from "../libs/routes";
+import { ROUTE_QUESTION } from "../libs/routes";
 import { X_TOKEN } from "../libs/constants";
 
 const EditQuestion = () => {
@@ -24,6 +23,8 @@ const EditQuestion = () => {
       option2: fetchedData?.options[1],
       option3: fetchedData?.options[2],
       option4: fetchedData?.options[3],
+      theory_value: fetchedData?.theory,
+      subobjective_value: fetchedData?.theory,
       prevCorrectOption: fetchedData?.correctOption,
       options: fetchedData?.options,
       correctOption: fetchedData?.correctOption
@@ -42,7 +43,8 @@ const EditQuestion = () => {
     option3,
     option4,
     correctOption,
-    // prevCorrectOption,
+    theory_value,
+    subobjective_value,
     questionId
   } = questionData;
 
@@ -59,7 +61,7 @@ const EditQuestion = () => {
     const token = localStorage.getItem(X_TOKEN)
     e.preventDefault();
     try {
-      await createHttpRequest(PUT_ACTION, `${ROUTE_EDIT_QUESTION}/${questionId}`, {
+      await createHttpRequest(PUT_ACTION, `${ROUTE_QUESTION}/${questionId}`, {
         quizId: id,
         options,
         correctOption,
@@ -68,7 +70,7 @@ const EditQuestion = () => {
         title,
       }, token)
       setQuestionData(initialState);
-      toast.success("Question edited!");
+      toast.success("Question edited!", {autoClose: 2000});
       navigate(`/dashboard/viewQuestions/${id}`)
     } catch (error) {
       toast.error(error?.response?.data?.message)
@@ -83,7 +85,7 @@ const EditQuestion = () => {
     const optionsArr = [option1, option2, option3, option4];
     setQuestionData({ ...questionData, options: [...optionsArr] });
     setAddedOptions(true);
-    toast.success("Options synced! You can proceed to create the question");
+    toast.success("Options synced! You can proceed to create the question", {autoClose: 2000});
   };
 
   return (
@@ -92,39 +94,15 @@ const EditQuestion = () => {
         <h1 className="text-5xl font-bold">Quiz: {fetchedData?.quizId?.title}</h1>
         <h1 className="text-4xl">Edit question</h1>
         <h6 className="text-xl">Question Type: </h6>
-        <div className="p-1 flex justify-around gap-1">
-          <div className="flex flex-column gap-1 flex-1 items-center">
-          {questionType === 'objective' && <VscPass size={30} fill="green" fontWeight={600} />}
-            <label htmlFor="">Objective</label>
-            <input
+        <div className="p-1 flex gap-1">
+          <div className="flex  gap-1 flex-1 items-center">
+            <VscPass size={30} fill="green" fontWeight={600} />
+            <label htmlFor="">{fetchedData.questionType}</label>
+            {/* <input
               className="cursor-pointer"
-              name="questionType"
+              defaultChecked
               type="radio"
-              value="objective"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="flex flex-column gap-1 flex-1 items-center">
-            {questionType === 'theory' && <VscPass size={30} fill="green" fontWeight={600} />}
-            <label htmlFor="">Theory</label>
-            <input
-              className="cursor-pointer"
-              name="questionType"
-              type="radio"
-              value="theory"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="flex flex-column gap-1 flex-1 items-center">
-          {questionType === 'sub_objective' && <VscPass size={30} fill="green" fontWeight={600} />}
-            <label htmlFor="">Sub Theory</label>
-            <input
-              className="cursor-pointer"
-              name="questionType"
-              type="radio"
-              value="sub_objective"
-              onChange={handleChange}
-            />
+            /> */}
           </div>
         </div>
       </div>
@@ -151,6 +129,10 @@ const EditQuestion = () => {
         />
       </div>
       <div className="py-2 flex gap-1 justify-center my-2 flex-column">
+        {/* Questions type check starts */}
+        {
+          questionType === 'objective' ?
+        <>
         <h6 className="text-xl">Options: </h6>
         <ul className="py-3" ref={ulRef}>
           <div className="my-2">
@@ -251,21 +233,31 @@ const EditQuestion = () => {
             </li>
           </div>
         </ul>
-        {addedOptions ? (
-          <button
-            className="bg-purple-400 w-fit py-1 px-4 rounded"
-            onClick={handleSubmit}
-          >
-            Edit
-          </button>
-        ) : (
-          <button
-            className="bg-purple-400 w-fit py-1 px-2 rounded animate-pulse"
-            onClick={addOptions}
-          >
-            Sync Option
-          </button>
-        )}
+        </> : 
+        questionType === 'theory' ?
+        <>
+        <label>Theory's answer</label>
+        <input type="text" className="border outline-none rounded py-1 px-2 w-[100%] md:w-1/2" placeholder="Enter your answer" value={theory_value} name="theory_value" onChange={handleChange} />
+       </> :
+       questionType === 'subobjective' ?
+          <>
+          <label>Subobjective's answer</label>
+          <input type="text" className="border outline-none rounded py-1 px-2 w-[100%] md:w-1/2" placeholder="Enter your answer" value={subobjective_value} name="subobjective_value" onChange={handleChange} />
+            </>: 
+        null
+        }
+        {/* Questions type check starts */}
+
+        {(!addedOptions && questionType == 'objective') ? (
+          <button className="bg-gray-200 hover:bg-gray-100 w-fit py-1 px-2 rounded" onClick={handleSubmit}> Edit</button>
+          ) : (!addedOptions && questionType === 'theory') ? (
+            <button className="bg-gray-200 hover:bg-gray-100 w-fit py-1 px-2 rounded" onClick={handleSubmit}> Edit</button>
+          ) : (addedOptions && questionType == 'objective') ?
+          (
+            <button className="bg-gray-200 hover:bg-gray-100 w-fit py-1 px-2 rounded animate-pulse" onClick={addOptions}> Sync Options</button>
+          ) :
+           null
+           }
       </div>
     </div>
   );

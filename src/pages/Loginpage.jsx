@@ -30,7 +30,7 @@ const Loginpage = () => {
         if (res?.success) {
           if (res && res?.user?.role === "admin") {
             localStorage.setItem("x-token", res.token);
-            toast.success("Log in successful!");
+            toast.success("Log in successful!", {autoClose: 2000});
             setUser(res?.user);
             setData(initialState);
             res.user &&
@@ -78,7 +78,7 @@ const Loginpage = () => {
         const res = data;
         if (res && res?.user?.role === "admin") {
           localStorage.setItem("x-token", res.token);
-          toast.success("Log in successful!");
+          toast.success("Log in successful!", {autoClose: 2000});
           setUser(res?.user);
           setData(initialState);
           data.user &&

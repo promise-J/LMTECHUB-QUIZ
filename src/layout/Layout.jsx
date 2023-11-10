@@ -52,7 +52,7 @@ const Layout = () => {
     user && sendSocketMessage(ws, 'logout', {id: user._id})
     localStorage.removeItem("x-token");
     navigate("/");
-    toast.success("Logged out successfully");
+    toast.success("Logged out successfully", {autoClose: 2000});
   };
 
 

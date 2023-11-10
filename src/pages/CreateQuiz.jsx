@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingLogo from "../components/loading/LoadingLogo";
 import createHttpRequest from "../api/httpRequest";
 import { POST_ACTION } from "../libs/routes_actions";
-import { ROUTE_POST_QUIZ } from "../libs/routes";
+import { ROUTE_QUIZ } from "../libs/routes";
 import { X_TOKEN } from "../libs/constants";
 
 const initialState = {
@@ -30,10 +30,10 @@ const CreateQuiz = () => {
     delete quizObject.candidate
     try {
       setLoading(true)
-      const res = await createHttpRequest(POST_ACTION, ROUTE_POST_QUIZ, {...quizObject}, token)
+      const res = await createHttpRequest(POST_ACTION, ROUTE_QUIZ, {...quizObject}, token)
 
       setLoading(false)
-      toast.success('Quiz Created')
+      toast.success('Quiz Created', {autoClose: 2000})
       navigate('/dashboard/viewquiz')
     } catch (error) {
       toast.error(error?.response?.data?.message)

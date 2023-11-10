@@ -8,7 +8,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import LoadingLogo from "../components/loading/LoadingLogo";
 import createHttpRequest from '../api/httpRequest'
 import {GET_ACTION, PUT_ACTION} from '../libs/routes_actions'
-import { ROUTE_ADD_CANDIDATE, ROUTE_GET_QUIZ } from "../libs/routes";
+import { ROUTE_ADD_CANDIDATE, ROUTE_QUIZ, ROUTE_QUIZ_QUESTIONS } from "../libs/routes";
 import { X_TOKEN } from "../libs/constants";
 
 const Singlequiz = () => {
@@ -18,6 +18,7 @@ const Singlequiz = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ duration: "", title: "" });
   const [candidate, setCandidate] = useState("");
+  const [quizQuestions, setQuizQuestions] = useState(0)
   const { title, duration } = data;
 
   useEffect(() => {
@@ -25,7 +26,9 @@ const Singlequiz = () => {
       const token = localStorage.getItem(X_TOKEN)
       try {
         setLoading(true);
-        const res = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${params.id}`, {}, token);
+        const res = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ}/${params.id}`, {}, token);
+        const quizQuestions = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ_QUESTIONS}/${params.id}`, {}, token);
+        setQuizQuestions(quizQuestions.data.length)
         setData({ duration: res.data.duration, title: res.data.title });
         setCurrentQuiz(res.data);
         setLoading(false);
@@ -47,8 +50,9 @@ const Singlequiz = () => {
       const token = localStorage.getItem(X_TOKEN)
       if(confirm('Are you sure you want to remove this candidate?')){
         const res = await createHttpRequest(PUT_ACTION, `${ROUTE_ADD_CANDIDATE}/${params.id}`, {candidate: candidate.trim()}, token)
-        console.log(res,' from remove')
-        toast.success(res.data.message)
+        const newCandidates = currentQuiz.candidates.filter(cand=> cand != candidate)
+        setCurrentQuiz({...currentQuiz, candidates: newCandidates})
+        toast.success(res.data.message, {autoClose: 2000})
         navigate(`/dashboard/viewquiz/${params.id}`)
       }
     } catch (error) {
@@ -64,7 +68,7 @@ const Singlequiz = () => {
     }
     try {
       const res = await createHttpRequest(PUT_ACTION, `${ROUTE_ADD_CANDIDATE}/${params.id}`, {candidate: candidate.trim()}, token)
-      toast.success(res.data.message);
+      toast.success(res.data.message, {autoClose: 2000});
       setCandidate('')
       navigate('/dashboard/viewquiz')
     } catch (error) {
@@ -80,10 +84,10 @@ const Singlequiz = () => {
   const handleQuizUpdate = async()=>{
     try {
       const token = localStorage.getItem(X_TOKEN)
-      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_GET_QUIZ}/${params.id}`, {duration, title}, token)
+      const {data} = await createHttpRequest(PUT_ACTION, `${ROUTE_QUIZ}/${params.id}`, {duration, title}, token)
       console.log(data)
       if(data.success){
-        toast.success('Quiz update successful')
+        toast.success('Quiz update successful', {autoClose: 2000})
         navigate('/dashboard/viewquiz')
       }else{
         toast.error(data.error)
@@ -146,7 +150,7 @@ const Singlequiz = () => {
           </ul>
       <ul className="flex flex-column gap-1 list-disc">
       </ul>
-      <h6 className="text-2xl">Questions</h6>
+      <h6 className="text-2xl">Questions ({quizQuestions})</h6>
       <div
         className="w-full p-2 my-3 flex px-3 gap-3 cursor-pointer"
         title="Create | View"

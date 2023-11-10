@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import useSingleQuiz from "../../hooks/useSingleQuiz";
 import createHttpRequest from '../../api/httpRequest'
-import { ROUTE_GET_QUIZ } from "../../libs/routes";
+import { ROUTE_QUIZ } from "../../libs/routes";
 import {GET_ACTION} from '../../libs/routes_actions'
 
 const SingleQuizModal = ({ paramData }) => {
@@ -12,14 +12,14 @@ const SingleQuizModal = ({ paramData }) => {
     duration: "",
     title: "",
   });
-  const { title, candidate, duration } = newQuiz;
+  const { title, duration } = newQuiz;
 
   const singleQuizHook = useSingleQuiz();
   useEffect(() => {
     if (paramData && paramData.id) {
       const getQuiz = async () => {
         try {
-          const res = await createHttpRequest(GET_ACTION, `${ROUTE_GET_QUIZ}/${paramData.id}`)
+          const res = await createHttpRequest(GET_ACTION, `${ROUTE_QUIZ}/${paramData.id}`)
           const { title, duration, candidates } = res.data;
           setQuiz({ title, duration, candidates, candidate: "" });
         } catch (error) {
@@ -55,7 +55,6 @@ const SingleQuizModal = ({ paramData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name);
     setNewQuiz({ ...newQuiz, [name]: value });
   };
 

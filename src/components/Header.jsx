@@ -43,7 +43,7 @@ const Header = () => {
         setUser(null);
         localStorage.removeItem("x-token");
         navigate("/");
-        toast.success("Logged out successfully");
+        toast.success("Logged out successfully", {autoClose: 2000});
       };
 
     function authStateList(){

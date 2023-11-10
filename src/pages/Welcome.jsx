@@ -16,7 +16,7 @@ const Welcome = () => {
       <div className='flex gap-3 p-2 welcome-header'>
         <div className='flex-1 p-3 flex flex-col justify-center'>
           <div className=''>
-          <h1 data-aos="fade-down-left"  style={{lineHeight: '1.3'}} className='md:text-5xl lg:text-6xl'>Number one platform for Testing. Where Interviewer meets Interviewee.</h1>
+          <h1 data-aos="fade-down"  style={{lineHeight: '1.3'}} className='md:text-5xl lg:text-6xl'>Number one platform for Testing. Where Interviewer meets Interviewee.</h1>
           <p style={{lineHeight: '2'}} className='text-xl my-3 text-red-500' data-aos='fade-up'>What else can you ask for? We are committed to serving you. We provide a conducive, secured and robust environment.
              We know how fraustrating other platforms can be that's why we got you covered
           </p>
@@ -29,7 +29,7 @@ const Welcome = () => {
       </div>
      </div>
      <div className="md:p-5 p-3">
-       <h1 className='text-center my-4'>What you should know about us</h1>
+       <h1 className='text-center my-4' data-aos='fade-down'>What you should know about us</h1>
        <div className='p-3 flex flex-wrap gap-1 md:gap-5'>
         <div data-aos='slide-up' className='flex-1 flex p-5 justify-center flex-col items-center '>
           <BsHouses size={30} className='mb-3' data-aos='fade-down-left' />

@@ -6,7 +6,7 @@ import createHttpRequest from "../api/httpRequest";
 import { DELETE_ACTION, GET_ACTION } from "../libs/routes_actions";
 import {ROUTE_QUIZ_QUESTIONS} from '../libs/routes'
 import { X_TOKEN } from "../libs/constants";
-import { ROUTE_GET_QUIZ } from "../libs/routes";
+import { ROUTE_QUIZ } from "../libs/routes";
 
 const Quiz = ({ quiz, quizes, setQuizes }) => {
   const [questionLength, setQuestionLength] = useState(0)
@@ -31,7 +31,7 @@ const Quiz = ({ quiz, quizes, setQuizes }) => {
       const newQuizState = quizes.filter(quiz=> quiz._id !== id)
       setQuizes(newQuizState)
       const token = localStorage.getItem(X_TOKEN)
-      const res = await createHttpRequest(DELETE_ACTION, `${ROUTE_GET_QUIZ}/${quiz?._id}`, {}, token)
+      const res = await createHttpRequest(DELETE_ACTION, `${ROUTE_QUIZ}/${quiz?._id}`, {}, token)
       navigate('/dashboard/viewquiz')
     }
   };

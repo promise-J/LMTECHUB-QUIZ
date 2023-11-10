@@ -51,7 +51,7 @@ const Questions = ({
       const res = await createHttpRequest(POST_ACTION, `${ROUTE_RESPONSE_QUIZ}/${quizId}`, {response, userId, email}, token)
       setLoading(false);
       console.log(res.data, "from auto submit");
-      toast.success("Your response has been sent");
+      toast.success("Your response has been sent", {autoClose: 2000});
       navigate("/quiz/success", { state: {} });
       localStorage.removeItem("x-token");
       localStorage.removeItem("quiz-refresh");
@@ -67,7 +67,7 @@ const Questions = ({
   useEffect(() => {
     const response = figureAnswers();
     if (remainingMinutes < 0) {
-      toast.success("Your time is up. You will now submit automatically");
+      toast.success("Your time is up. You will now submit automatically"), {autoClose: 2000};
       autoSubmit(response);
     }
   }, [remainingSeconds]);
@@ -103,7 +103,7 @@ const Questions = ({
             return toast.error(data.message)
           }
           setLoading(true);
-          toast.success("Your response has been sent");
+          toast.success("Your response has been sent", {autoClose: 2000});
           setLoading(false);
           navigate("/quiz/success", { state: {} });
           localStorage.removeItem("x-token");
